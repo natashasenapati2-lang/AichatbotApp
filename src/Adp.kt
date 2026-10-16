@@ -6,38 +6,44 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class Adp(private val l: List<M>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class Adp(private val messages: List<M>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    class U(v: View) : RecyclerView.ViewHolder(v) {
-        val t: TextView = v.findViewById(R.id.tv)
+    companion object {
+        private const val TYPE_USER = 1
+        private const val TYPE_AI = 0
     }
 
-    class A(v: View) : RecyclerView.ViewHolder(v) {
-        val t: TextView = v.findViewById(R.id.tv)
+    class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val messageTextView: TextView = itemView.findViewById(R.id.tvMessage)
     }
 
-    override fun getItemViewType(p: Int): Int {
-        return if (l[p].isU) 1 else 0
+    class AiViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val messageTextView: TextView = itemView.findViewById(R.id.tvMessage)
     }
 
-    override fun onCreateViewHolder(p0: ViewGroup, p1: Int): RecyclerView.ViewHolder {
-        return if (p1 == 1) {
-            val v = LayoutInflater.from(p0.context).inflate(R.layout.item_u, p0, false)
-            U(v)
+    override fun getItemViewType(position: Int): Int {
+        return if (messages[position].isU) TYPE_USER else TYPE_AI
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        return if (viewType == TYPE_USER) {
+            val view = inflater.inflate(R.layout.item_u, parent, false)
+            UserViewHolder(view)
         } else {
-            val v = LayoutInflater.from(p0.context).inflate(R.layout.item_a, p0, false)
-            A(v)
+            val view = inflater.inflate(R.layout.item_a, parent, false)
+            AiViewHolder(view)
         }
     }
 
-    override fun getItemCount(): Int = l.size
+    override fun getItemCount(): Int = messages.size
 
-    override fun onBindViewHolder(h: RecyclerView.ViewHolder, p: Int) {
-        val m = l[p]
-        if (h is U) {
-            h.t.text = m.t
-        } else if (h is A) {
-            h.t.text = m.t
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val item = messages[position]
+        if (holder is UserViewHolder) {
+            holder.messageTextView.text = item.t
+        } else if (holder is AiViewHolder) {
+            holder.messageTextView.text = item.t
         }
     }
 }

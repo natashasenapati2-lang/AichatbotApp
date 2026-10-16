@@ -4,18 +4,18 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="#F8FAFC"
     android:orientation="vertical">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv"
+        android:id="@+id/rvMessages"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:padding="8dp" />
+        android:paddingVertical="12dp" />
 
-    <!-- Simple Bottom Input Container -->
+    <!-- Bottom Input Container -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,35 +23,36 @@
         android:maxWidth="488dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="8dp">
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp">
 
         <EditText
-            android:id="@+id/et"
+            android:id="@+id/etInput"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:maxWidth="488dp"
             android:background="@drawable/edittext_bg"
-            android:hint="Type a message..."
+            android:hint="Ask AI anything..."
             android:inputType="textMultiLine"
             android:maxLines="4"
-            android:paddingHorizontal="14dp"
+            android:paddingHorizontal="16dp"
             android:paddingVertical="10dp"
-            android:textColor="#222222"
-            android:textColorHint="#888888"
+            android:textColor="#0F172A"
+            android:textColorHint="#94A3B8"
             android:textSize="15sp" />
 
         <ImageButton
-            android:id="@+id/btn"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:id="@+id/btnSend"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
             android:layout_marginStart="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="@drawable/send_btn_bg"
             android:contentDescription="Send"
-            android:padding="8dp"
+            android:padding="10dp"
             android:rotation="180"
             android:scaleType="fitCenter"
             android:src="@drawable/left_arrow"
-            app:tint="#333333" />
+            app:tint="#FFFFFF" />
     </LinearLayout>
 </LinearLayout>

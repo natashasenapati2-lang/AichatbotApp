@@ -16,60 +16,74 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class AiChatBot : AppCompatActivity() {
-    private val l = mutableListOf<M>()
-    private lateinit var a: Adp
-    private lateinit var r: RecyclerView
-    private lateinit var e: EditText
-    private lateinit var b: ImageButton
+
+    private val chatList = mutableListOf<M>()
+    private lateinit var chatAdapter: Adp
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var inputEditText: EditText
+    private lateinit var sendButton: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_ai_chat_bot)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, i ->
-            val s = i.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(s.left, s.top, s.right, s.bottom)
-            i
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
         }
 
-        r = findViewById(R.id.rv)
-        e = findViewById(R.id.et)
-        b = findViewById(R.id.btn)
+        initViews()
+        setupRecyclerView()
+        setupSendListener()
+    }
 
-        a = Adp(l)
-        r.layoutManager = LinearLayoutManager(this)
-        r.adapter = a
+    private fun initViews() {
+        recyclerView = findViewById(R.id.rvMessages)
+        inputEditText = findViewById(R.id.etInput)
+        sendButton = findViewById(R.id.btnSend)
+    }
 
-        val g = GenerativeModel(
+    private fun setupRecyclerView() {
+        chatAdapter = Adp(chatList)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = chatAdapter
+    }
+
+    private fun setupSendListener() {
+        val aiModel = GenerativeModel(
             modelName = "gemini-1.5-flash",
             apiKey = "YOUR_API_KEY"
         )
 
-        b.setOnClickListener {
-            val txt = e.text.toString()
-            if (txt.isNotBlank()) {
-                l.add(M(txt, true))
-                a.notifyItemInserted(l.size - 1)
-                r.scrollToPosition(l.size - 1)
-                e.text.clear()
+        sendButton.setOnClickListener {
+            val userText = inputEditText.text.toString().trim()
+            if (userText.isNotEmpty()) {
+                addMessageToList(M(userText, isU = true))
+                inputEditText.text.clear()
 
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        val res = g.generateContent(txt)
+                        val response = aiModel.generateContent(userText)
+                        val aiResponseText = response.text ?: "No response"
                         withContext(Dispatchers.Main) {
-                            l.add(M(res.text ?: "", false))
-                            a.notifyItemInserted(l.size - 1)
-                            r.scrollToPosition(l.size - 1)
+                            addMessageToList(M(aiResponseText, isU = false))
                         }
-                    } catch (ex: Exception) {
+                    } catch (e: Exception) {
+                        val errorMessage = e.localizedMessage ?: "An error occurred"
                         withContext(Dispatchers.Main) {
-                            l.add(M(ex.message ?: "", false))
-                            a.notifyItemInserted(l.size - 1)
-                            r.scrollToPosition(l.size - 1)
+                            addMessageToList(M(errorMessage, isU = false))
                         }
                     }
                 }
             }
         }
+    }
+
+    private fun addMessageToList(message: M) {
+        chatList.add(message)
+        chatAdapter.notifyItemInserted(chatList.size - 1)
+        recyclerView.scrollToPosition(chatList.size - 1)
     }
 }
